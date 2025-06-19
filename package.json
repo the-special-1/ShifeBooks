@@ -1,0 +1,10 @@
+{
+  "name": "shifebooks-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}
