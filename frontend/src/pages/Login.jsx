@@ -72,10 +72,17 @@ const Login = () => {
                 {loading ? <span className="loading loading-spinner"></span> : 'Login'}
               </button>
             </div>
-            <p className="text-center mt-4">
-              Don't have an account?{" "}
-              <Link to="/signup" className="link link-primary">Sign Up</Link>
-            </p>
+            <div className="text-sm text-center mt-4">
+              <p className="mb-2">
+                <Link to="/forgot-password" className="link link-primary">
+                  Forgot Password?
+                </Link>
+              </p>
+              <p>
+                Don't have an account?{" "}
+                <Link to="/signup" className="link link-primary">Sign Up</Link>
+              </p>
+            </div>
           </form>
         </div>
       </div>

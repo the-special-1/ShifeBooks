@@ -46,22 +46,34 @@ const AdminDashboard = () => {
   };
 
   const handleApproveUser = async (userId) => {
+    const originalUsers = [...users];
+    const updatedUsers = users.map(user =>
+      user._id === userId ? { ...user, isApproved: true } : user
+    );
+    setUsers(updatedUsers);
+
     try {
       await axios.patch(`/api/admin/approve-user/${userId}`);
       toast.success('User approved successfully!');
-      fetchUsers();
     } catch (error) {
       toast.error('Failed to approve user');
+      setUsers(originalUsers); // Revert on error
     }
   };
 
   const handleApproveRequest = async (requestId) => {
+    const originalRequests = [...requests];
+    const updatedRequests = requests.map(req =>
+      req._id === requestId ? { ...req, isApproved: true } : req
+    );
+    setRequests(updatedRequests);
+
     try {
       await axios.patch(`/api/admin/approve-download/${requestId}`);
       toast.success('Request approved successfully!');
-      fetchRequests();
     } catch (error) {
       toast.error('Failed to approve request');
+      setRequests(originalRequests); // Revert on error
     }
   };
 

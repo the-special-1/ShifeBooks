@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import AdminDashboard from './pages/AdminDashboard';
 import MyBooks from './pages/MyBooks';
+import ForgotPassword from './pages/ForgotPassword';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
@@ -23,13 +24,11 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/login' element={!authUser ? <Login /> : <Navigate to='/' />} />
           <Route path='/signup' element={!authUser ? <SignUp /> : <Navigate to='/' />} />
+          <Route path='/my-books' element={authUser ? <MyBooks /> : <Navigate to='/login' />} />
+          <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route 
-            path='/admin-dashboard' 
+            path='/admin' 
             element={authUser?.role === 'admin' ? <AdminDashboard /> : <Navigate to='/' />} 
-          />
-          <Route 
-            path='/my-books' 
-            element={authUser ? <MyBooks /> : <Navigate to='/login' />} 
           />
         </Routes>
       </main>
