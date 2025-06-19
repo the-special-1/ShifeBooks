@@ -5,12 +5,18 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiDownload, FiClock, FiCheckCircle, FiSearch } from 'react-icons/fi';
+import { FaTelegram, FaPhone, FaUniversity } from 'react-icons/fa';
+import AnimatedText from '../components/AnimatedText';
 
 const Home = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [requesting, setRequesting] = useState({});
   const { authUser } = useAuth();
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedBookForPayment, setSelectedBookForPayment] = useState(null);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -71,6 +77,33 @@ const Home = () => {
     } finally {
       setRequesting(prev => ({ ...prev, [bookId]: false }));
     }
+  };
+
+  const handleOpenModal = (book) => {
+    setSelectedBook(book);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedBook(null);
+    setIsModalOpen(false);
+  };
+
+  const handleOpenPaymentModal = (book) => {
+    setSelectedBookForPayment(book);
+    setIsPaymentModalOpen(true);
+  };
+
+  const handleClosePaymentModal = () => {
+    setSelectedBookForPayment(null);
+    setIsPaymentModalOpen(false);
+  };
+
+  const handleProceedWithRequest = () => {
+    if (selectedBookForPayment) {
+      handleRequestDownload(selectedBookForPayment._id);
+    }
+    handleClosePaymentModal();
   };
 
   return (
@@ -171,6 +204,14 @@ const Home = () => {
                             {book.description}
                           </p>
                         )}
+                        {book.summary && (
+                          <button 
+                            onClick={() => handleOpenModal(book)}
+                            className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors duration-300 mt-2"
+                          >
+                            View Summary
+                          </button>
+                        )}
                       </div>
                       
                       <div className="mt-4 pt-4 border-t border-gray-700/50">
@@ -205,7 +246,7 @@ const Home = () => {
                           </button>
                         ) : (
                           <button 
-                            onClick={() => handleRequestDownload(book._id)}
+                            onClick={() => handleOpenPaymentModal(book)}
                             disabled={requesting[book._id]}
                             className="w-full flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed"
                           >
@@ -235,6 +276,113 @@ const Home = () => {
           </AnimatePresence>
         )}
       </motion.div>
+
+      <AnimatePresence>
+        {isModalOpen && selectedBook && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCloseModal}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 50 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
+              className="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col relative border border-gray-700"
+            >
+              <div className="p-6 sm:p-8 flex-grow overflow-y-auto">
+                <h2 className="text-3xl font-bold text-white mb-2">{selectedBook.title}</h2>
+                <p className="text-lg text-cyan-400 mb-6">by {selectedBook.author}</p>
+                
+                <h3 className="text-xl font-semibold text-white mb-3">Summary</h3>
+                <div className="text-gray-300 text-lg leading-relaxed">
+                  <AnimatedText text={selectedBook.summary} />
+                </div>
+              </div>
+              <div className="p-6 bg-gray-900/50 border-t border-gray-700/50 rounded-b-2xl">
+                <button 
+                  onClick={handleCloseModal} 
+                  className="btn btn-primary w-full"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isPaymentModalOpen && selectedBookForPayment && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleClosePaymentModal}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 50 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col relative border border-gray-700"
+            >
+              <div className="p-6 sm:p-8 flex-grow overflow-y-auto text-center">
+                <h2 className="text-3xl font-bold text-white mb-2">Payment Details</h2>
+                <p className="text-gray-400 mb-6">To get your download approved, please complete the payment using one of the options below.</p>
+                
+                <div className="space-y-4 text-left my-8">
+                  <div className="flex items-center p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                    <FaTelegram className="text-2xl text-cyan-400 mr-4" />
+                    <div>
+                      <h3 className="font-semibold text-white">Telegram</h3>
+                      <a href="https://t.me/@MTesfaye12" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">@MTesfaye12</a>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                    <FaPhone className="text-2xl text-green-400 mr-4" />
+                    <div>
+                      <h3 className="font-semibold text-white">Phone Number</h3>
+                      <p className="text-gray-300">+251 96 282 2532</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                    <FaUniversity className="text-2xl text-amber-400 mr-4" />
+                    <div>
+                      <h3 className="font-semibold text-white">Bank Account</h3>
+                      <p className="text-gray-300">Bank Name: CBE (Shiferaw Tesfaye)</p>
+                      <p className="text-gray-300">Account: 1000034651788</p>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-xs text-gray-500">After payment, click the button below. Your download will be approved shortly.</p>
+              </div>
+              <div className="p-6 bg-gray-900/50 border-t border-gray-700/50 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button 
+                  onClick={handleClosePaymentModal} 
+                  className="btn btn-outline w-full"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleProceedWithRequest} 
+                  className="btn btn-primary w-full"
+                  disabled={requesting[selectedBookForPayment._id]}
+                >
+                  {requesting[selectedBookForPayment._id] ? 'Submitting...' : 'I Paid, Submit Request'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

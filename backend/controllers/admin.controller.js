@@ -20,7 +20,7 @@ export const getUsers = async (req, res) => {
 // @access  Private/Admin
 export const uploadBook = async (req, res) => {
   try {
-    const { title, author, description } = req.body;
+    const { title, author, description, summary } = req.body;
     const files = req.files;
 
     if (!files || !files.coverImage || !files.pdf) {
@@ -37,6 +37,7 @@ export const uploadBook = async (req, res) => {
       title,
       author,
       description,
+      summary,
       coverImage: coverImageUrl,
       pdfUrl: pdfUrl,
       uploadedBy: req.user._id,
@@ -86,25 +87,27 @@ export const getDownloadRequests = async (req, res) => {
 export const approveDownload = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const book = await Book.findOne({ 'downloadRequests._id': requestId });
 
-    if (!book) {
-      return res.status(404).json({ error: 'Request not found' });
+    const result = await Book.updateOne(
+      { 'downloadRequests._id': requestId },
+      {
+        $set: {
+          'downloadRequests.$.status': 'approved',
+          'downloadRequests.$.approvedAt': new Date(),
+        },
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      const book = await Book.findOne({ 'downloadRequests._id': requestId });
+      if (!book) {
+        return res.status(404).json({ error: 'Request not found' });
+      }
+      // If book is found but not modified, it was likely already approved.
+      // We can consider this a success.
     }
 
-    const request = book.downloadRequests.id(requestId);
-    request.status = 'approved';
-    request.approvedAt = new Date();
-
-    await book.save();
-    res.status(200).json({ 
-      message: 'Download request approved',
-      request: {
-        _id: request._id,
-        status: request.status,
-        approvedAt: request.approvedAt
-      }
-    });
+    res.status(200).json({ message: 'Download request approved successfully' });
   } catch (error) {
     console.error('Error in approveDownload controller:', error.message);
     res.status(500).json({ error: 'Internal Server Error' });

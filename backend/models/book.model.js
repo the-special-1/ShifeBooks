@@ -34,6 +34,10 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    summary: {
+      type: String,
+      default: '',
+    },
     coverImage: {
       type: String, // URL to the cover image in Firebase Storage
       required: true,
