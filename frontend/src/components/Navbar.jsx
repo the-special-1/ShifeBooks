@@ -41,14 +41,24 @@ const Navbar = () => {
               <li>
                 <button onClick={handleLogout} className="btn btn-ghost">Logout</button>
               </li>
+              <li className="ml-4">
+                <span className="font-semibold">Welcome, {authUser.fullName}</span>
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
+              <li>
+                <Link to="/signup">Sign Up</Link>
+              </li>
             </>
           )}
-          {!authUser && (
-            <>
-              <NavLink to="/login" className="px-4 py-2 text-violet-100 hover:bg-violet-900/30 rounded-lg">
-                Sign In
-              </NavLink>
-              <NavLink 
-                to="/signup" 
-                className="px-4 py-2 text-center bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-lg hover:from-purple-500 hover:to-violet-500 transition-all"
-    
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default Navbar;
