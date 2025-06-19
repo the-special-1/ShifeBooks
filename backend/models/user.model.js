@@ -25,6 +25,8 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // Admin will set this to true after payment
     },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
   },
   { timestamps: true }
 );

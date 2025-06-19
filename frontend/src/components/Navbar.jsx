@@ -64,7 +64,7 @@ const Navbar = () => {
                 className={`px-4 py-2 rounded-lg transition-all duration-300 ${
                   location.pathname === link.to
                     ? 'text-white bg-gradient-to-r from-cyan-500/20 to-blue-500/20'
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                    : 'text-black hover:text-white hover:bg-white/5'
                 }`}
               >
                 <span className="flex items-center">

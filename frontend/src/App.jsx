@@ -6,6 +6,7 @@ import SignUp from './pages/SignUp';
 import AdminDashboard from './pages/AdminDashboard';
 import MyBooks from './pages/MyBooks';
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import { useAuth } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
@@ -25,7 +26,8 @@ function App() {
           <Route path='/login' element={!authUser ? <Login /> : <Navigate to='/' />} />
           <Route path='/signup' element={!authUser ? <SignUp /> : <Navigate to='/' />} />
           <Route path='/my-books' element={authUser ? <MyBooks /> : <Navigate to='/login' />} />
-          <Route path='/forgot-password' element={<ForgotPassword />} />
+                    <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path='/reset-password/:token' element={<ResetPassword />} />
           <Route 
             path='/admin' 
             element={authUser?.role === 'admin' ? <AdminDashboard /> : <Navigate to='/' />} 

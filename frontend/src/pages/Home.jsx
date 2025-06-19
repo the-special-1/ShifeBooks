@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiDownload, FiClock, FiCheckCircle, FiSearch } from 'react-icons/fi';
 import { FaTelegram, FaPhone, FaUniversity } from 'react-icons/fa';
 import AnimatedText from '../components/AnimatedText';
+import Chatbot from '../components/Chatbot';
 
 const Home = () => {
   const [books, setBooks] = useState([]);
@@ -383,6 +384,7 @@ const Home = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <Chatbot />
     </div>
   );
 };
